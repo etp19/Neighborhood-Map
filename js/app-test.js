@@ -78,7 +78,7 @@ let myLocations = function (data) {
         let result = eflicks.items[0].media;
         self.image = result.m;
         console.log(self.image);
-    }).fail(function(){console.log('error occurred while getting data from flickr')});
+    }).fail(function(){alert('error occurred while getting data from flickr, try refreshing the page')});
 
     // get info from the foursquare api
     $.getJSON(fourSquareURL).done(function (e) {
@@ -88,7 +88,7 @@ let myLocations = function (data) {
         if (typeof self.phone === 'undefined'){
             self.phone = 'Phone is not Provided'
         }
-    }).fail(function(){console.log('error occurred while getting data from foursquare')});
+    }).fail(function(){alert('error occurred while getting data from foursquare, try refreshing the page')});
 
     // make markers disappear when they are not selected in the search box
     this.hideMarker = ko.computed(function() {
@@ -121,6 +121,11 @@ let myLocations = function (data) {
         content: self.contentMarker
     });
         infoWindow.open(map, this);
+
+        setTimeout(function() {
+            self.marker.setAnimation(null);
+        }, 2100);
+    
     });
 
     this.showFromList = function(place) {
