@@ -3,14 +3,14 @@
  */
 
 // global variables.
-let fourSquareID = "Z2L1F3ZVLJBK3VHDGG4F0D1P2LJ4DG4KVESBX3MJ1F1OBGMM";
-let fourSquareSecret = "U05NAGAM1P1BVWM4ZTXJYVLBVOZBTBOXAX2VFJWVBVGZ1QQA";
-let fourSquareV = "20170101";
-const detroitCordinates = {lat: 42.3338889,lng: -083.0477778};
-let map;
+var FOURSQUAREID = "Z2L1F3ZVLJBK3VHDGG4F0D1P2LJ4DG4KVESBX3MJ1F1OBGMM";
+var FOURSQUARESECRET = "U05NAGAM1P1BVWM4ZTXJYVLBVOZBTBOXAX2VFJWVBVGZ1QQA";
+var FOURSQUAREV = "20170101";
+var DETROITCORDINATES = {lat: 42.3338889, lng: -083.0477778};
+var map;
 
 // data model
-let InitialLocations = [
+var initialLocations = [
     {
         name: 'The Fillmore Detroit',
         lat: 42.337969,
@@ -45,8 +45,8 @@ let InitialLocations = [
 ];
 
 
-let myLocations = function (data) {
-    let self = this;
+var myLocations = function (data) {
+    var self = this;
     this.name = data.name;
     this.lat = data.lat;
     this.lng = data.lng;
@@ -63,114 +63,114 @@ let myLocations = function (data) {
         animation: null
     });
     // construct the info for Foursquare api.
-    let fourSquareURL = 'https://api.foursquare.com/v2/venues/search?ll='+ this.lat + ',' +
-        this.lng + '&client_id=' + fourSquareID + '&client_secret=' + fourSquareSecret + '&v=' + fourSquareV + '&query=' + this.name;
+    var fourSquareURL = 'https://api.foursquare.com/v2/venues/search?ll=' + this.lat + ',' +
+        this.lng + '&client_id=' + FOURSQUAREID + '&client_secret=' + FOURSQUARESECRET + '&v=' + FOURSQUAREV + '&query=' + this.name;
 
     // construct info for flickr api
-    let flickrURL = "https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
-    let flickrOptions = {
-            tags: self.name,
-            format: "json"
-        };
+    var flickrURL = "https://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
+    var flickrOptions = {
+        tags: self.name,
+        format: "json"
+    };
 
     // get info from the flickr api
     $.getJSON(flickrURL, flickrOptions, function (eflicks) {
-        let result = eflicks.items[0].media;
+        var result = eflicks.items[0].media;
         self.image = result.m;
         console.log(self.image);
-    }).fail(function(){alert('error occurred while getting data from flickr, try refreshing the page')});
+    }).fail(function () {
+        alert('error occurred while getting data from flickr, try refreshing the page')
+    });
 
     // get info from the foursquare api
     $.getJSON(fourSquareURL).done(function (e) {
-        let results = e.response.venues[0];
+        var results = e.response.venues[0];
         self.urlOficial = results.url;
         self.phone = results.contact.formattedPhone;
-        if (typeof self.phone === 'undefined'){
+        if (typeof self.phone === 'undefined') {
             self.phone = 'Phone is not Provided'
         }
-    }).fail(function(){alert('error occurred while getting data from foursquare, try refreshing the page')});
+    }).fail(function () {
+        alert('error occurred while getting data from foursquare, try refreshing the page')
+    });
 
     // make markers disappear when they are not selected in the search box
-    this.hideMarker = ko.computed(function() {
-		if(this.visible() === true) {
-			this.marker.setMap(map);
-		} else {
-			this.marker.setMap(null);
-		}
-		return true;
-	}, this);
+    this.hideMarker = ko.computed(function () {
+        if (this.visible() === true) {
+            this.marker.setMap(map);
+        } else {
+            this.marker.setMap(null);
+        }
+        return true;
+    }, this);
 
     // construct marker
     this.contentMarker = '';
 
     // add animation to the market and set all the data from the APIs in order to be displayed when someone click on a marker.
     this.marker.addListener('click', function () {
-        if (this.getAnimation() !== null){
+        if (this.getAnimation() !== null) {
             this.setAnimation(null);
         } else {
-        this.setAnimation(google.maps.Animation.BOUNCE);
+            this.setAnimation(google.maps.Animation.BOUNCE);
         }
 
-        self.contentMarker = '<div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">' +
-        '<div class="mdl-card__title mdl-card--expand mdl-color--white-300"><img src="'+ self.image +'"><h2 class="mdl-card__title-text"></h2></div>' +
-        '<div class="mdl-card__supporting-text mdl-color-text--grey-600">'+ data.name +"</div>" +
-        '<div class="mdl-card__supporting-text mdl-color-text--grey-600">'+ " Phone" + " " + self.phone +"</div>" +
-        '<div class="mdl-card__actions mdl-card--border"><a href=" ' + self.urlOficial +'" class="mdl-button mdl-js-button mdl-js-ripple-effect">Visit Website</a></div></div>';
+        self.contentMarker = '<div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tabvar mdl-cell--12-col-desktop">' +
+            '<div class="mdl-card__title mdl-card--expand mdl-color--white-300"><img src="' + self.image + '"><h2 class="mdl-card__title-text"></h2></div>' +
+            '<div class="mdl-card__supporting-text mdl-color-text--grey-600">' + data.name + "</div>" +
+            '<div class="mdl-card__supporting-text mdl-color-text--grey-600">' + " Phone" + " " + self.phone + "</div>" +
+            '<div class="mdl-card__actions mdl-card--border"><a href=" ' + self.urlOficial + '" class="mdl-button mdl-js-button mdl-js-ripple-effect">Visit Website</a></div></div>';
 
-        let infoWindow = new google.maps.InfoWindow({
-        content: self.contentMarker
-    });
+        var infoWindow = new google.maps.InfoWindow({
+            content: self.contentMarker
+        });
         infoWindow.open(map, this);
 
-        setTimeout(function() {
+        setTimeout(function () {
             self.marker.setAnimation(null);
         }, 2100);
-    
+
     });
 
-    this.showFromList = function(place) {
+    this.showFromList = function (place) {
         console.log('I am in ' + this.name);
-		google.maps.event.trigger(this.marker, 'click');
-	};
+        google.maps.event.trigger(this.marker, 'click');
+    };
 };
 
 
-
-
-let ViewModel = function () {
-    let self = this;
+var ViewModel = function () {
+    var self = this;
     this.searchLocation = ko.observable("");
     this.location = ko.observableArray([]);
 
     // initialize google maps
     map = new google.maps.Map(document.getElementById('map'), {
-          center: detroitCordinates,
-          zoom: 13
-        });
+        center: DETROITCORDINATES,
+        zoom: 13
+    });
 
-    InitialLocations.forEach(function (place) {
+    initialLocations.forEach(function (place) {
         self.location.push(new myLocations(place));
     });
 
     // implement the search function
-    this.filterList = ko.computed( function() {
-		let filter = self.searchLocation().toLowerCase();
-		if (!filter) {
-			self.location().forEach(function(locationItem){
-				locationItem.visible(true);
-			});
-			return self.location();
-		} else {
-			return ko.utils.arrayFilter(self.location(), function(locationItem) {
-				let string = locationItem.name.toLowerCase();
-				let result = (string.search(filter) >= 0);
-				locationItem.visible(result);
-				return result;
-			});
-		}
-	}, self);
-
-
+    this.filterList = ko.computed(function () {
+        var filter = self.searchLocation().toLowerCase();
+        if (!filter) {
+            self.location().forEach(function (locationItem) {
+                locationItem.visible(true);
+            });
+            return self.location();
+        } else {
+            return ko.utils.arrayFilter(self.location(), function (locationItem) {
+                var string = locationItem.name.toLowerCase();
+                var result = (string.search(filter) >= 0);
+                locationItem.visible(result);
+                return result;
+            });
+        }
+    }, self);
 
 
 };
@@ -180,5 +180,5 @@ function appInit() {
 }
 
 function errorHandling() {
-	alert("Google Maps is not loading at the moment, please try again in a few minutes");
+    alert("Google Maps is not loading at the moment, please try again in a few minutes");
 }
